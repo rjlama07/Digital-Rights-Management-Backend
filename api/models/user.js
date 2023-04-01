@@ -13,18 +13,4 @@ const userSchema = mongoose.Schema({
   role: String,
 });
 
-userSchema.statics.isThisEmailInUse = async function (email) {
-  try {
-    const user = await this.findOne({ email: email });
-    if (user) {
-      return false;
-    }
-
-    return true;
-  } catch (e) {
-    console.log("Error inside isEmailInUseFunction", error.message);
-    return false;
-  }
-};
-
 module.exports = mongoose.model("user", userSchema);
