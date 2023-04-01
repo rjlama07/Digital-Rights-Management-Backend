@@ -21,7 +21,6 @@
 //   console.log("Server startred on port 8000");
 // });
 
-const { config } = require("dotenv");
 const http = require("http");
 const app = require("./app");
 const server = http.createServer(app);
