@@ -31,7 +31,7 @@ router.post("/login", (req, res, next) => {
               },
               "marasini",
               {
-                expiresIn: "24h",
+                expiresIn: "120h",
               }
             );
             res.status(200).json({
