@@ -3,7 +3,7 @@ const { model } = require("mongoose");
 
 const router = express.Router();
 
-router.get("/", (req, res, next) => {
+router.get("/vehical", (req, res, next) => {
   res.status(200).json({
     msg: "this is product get request",
   });

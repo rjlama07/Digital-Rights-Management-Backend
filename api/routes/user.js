@@ -1,6 +1,5 @@
 const express = require("express");
 const { model } = require("mongoose");
-
 const mongoose = require("mongoose");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
@@ -8,6 +7,7 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 
 router.post("/login", (req, res, next) => {
+  console.log("hello");
   User.find({ email: req.body.email })
     .exec()
     .then((user) => {
@@ -29,7 +29,7 @@ router.post("/login", (req, res, next) => {
                 firstName: user[0].firstName,
                 lastName: user[0].lastName,
               },
-              "this is dummy text",
+              "key 123",
               {
                 expiresIn: "24h",
               }
@@ -62,8 +62,9 @@ router.post("/signup", async (req, res, next) => {
   } else {
     bcrypt.hash(req.body.password, 10, (err, hash) => {
       if (err) {
+        console.log(err);
         res.status(500).json({
-          error: err,
+          error: "Internl Server Error",
         });
       } else {
         const user = new User({
@@ -84,7 +85,7 @@ router.post("/signup", async (req, res, next) => {
           .catch((err) => {
             console.log(err);
             res.status(500).json({
-              error: err,
+              error: "Internal Server Error",
             });
           });
       }
