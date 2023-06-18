@@ -46,9 +46,7 @@ router.post("/postBeat", (req, res) => {
     if (!req.file) {
       return res.status(400).json({ msg: "No file uploaded" });
     }
-    const fileLink = `${req.protocol}://${req.get("host")}/beats/${
-      req.file.filename
-    }`;
+    const fileLink = `https://${req.get("host")}/beats/${req.file.filename}`;
     res.status(200).json({
       msg: "Upload successfully",
       beatUrl: fileLink,
