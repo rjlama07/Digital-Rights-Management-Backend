@@ -30,7 +30,7 @@ app.use("/beats", express.static("./upload/freebeats"));
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://drm-8gc9.onrender.com",
   })
 );
 
