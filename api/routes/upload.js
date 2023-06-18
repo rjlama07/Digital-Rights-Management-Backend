@@ -22,6 +22,16 @@ const upload = multer({
   storage: storage,
 });
 
+router.get("/getBeats", (req, res) => {
+  Beat.find()
+    .then((beats) => {
+      res.json({ beats });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: "Internal Server Error" });
+    });
+});
+
 router.post("/postBeat", (req, res) => {
   upload.single("beats")(req, res, function (err) {
     if (err instanceof multer.MulterError) {
