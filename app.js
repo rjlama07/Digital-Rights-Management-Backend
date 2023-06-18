@@ -2,6 +2,8 @@ const express = require("express");
 const mongose = require("mongoose");
 const bodyParser = require("body-parser");
 const app = express();
+
+const cors = require("cors");
 const userRoute = require("./api/routes/user");
 const vehicalRoute = require("./api/routes/vehical");
 const uplaodRoute = require("./api/routes/upload");
@@ -12,6 +14,7 @@ mongose.connect(
 mongose.connection.on("error", (err) => {
   console.log("Connection failed");
 });
+app.use(cors()); //
 
 app.use("/beats", express.static("upload/freebeats"));
 
@@ -24,5 +27,11 @@ app.use("/user", userRoute);
 app.use("/vehical", vehicalRoute);
 app.use("/upload", uplaodRoute);
 app.use("/beats", express.static("./upload/freebeats"));
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
 
 module.exports = app;
