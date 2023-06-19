@@ -5,10 +5,12 @@ const { model } = require("mongoose");
 const mongoose = require("mongoose");
 const Beat = require("../models/beat");
 const multer = require("multer");
+xw;
 const path = require("path");
+const paidBeat_schema = require("../models/paidBeat_schema");
 
 app.use("/beats", express.static("./upload/freebeats"));
-
+x;
 const storage = multer.diskStorage({
   destination: "./upload/freebeats",
   filename: (req, file, cb) => {
@@ -20,6 +22,29 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
   storage: storage,
+});
+
+router.post("/postPaidBeat", (req, res) => {
+  const beat = paidBeat_schema({
+    _id: mongoose.Types.ObjectId(),
+    beatName: req.body.beatName,
+    producerName: req.body.beatName,
+    beatUrl: req.body.beatName,
+    price: req.body.beatName,
+  });
+  beat
+    .save()
+    .then((result) => {
+      res.status(200).json({
+        message: "Beat Uploaded Sucesfully",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: "Internal Server Error",
+      });
+    });
 });
 
 router.get("/getBeats", (req, res) => {
@@ -60,6 +85,7 @@ router.post("/uploadBeat", (req, res, next) => {
     beatName: req.body.beatName,
     producerName: req.body.producerName,
     beatUrl: req.body.beatUrl,
+    price: req.body.price,
   });
   beat
     .save()
