@@ -1,4 +1,4 @@
-const { Double } = require("mongodb");
+const mongoose = require("mongoose");
 
 const paidBeat = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -8,4 +8,4 @@ const paidBeat = mongoose.Schema({
   price: String,
 });
 
-module.exports = mongoose.model("beat", paidBeat);
+module.exports = mongoose.model("paidBeat", paidBeat);

@@ -5,12 +5,12 @@ const { model } = require("mongoose");
 const mongoose = require("mongoose");
 const Beat = require("../models/beat");
 const multer = require("multer");
-xw;
+
 const path = require("path");
 const paidBeat_schema = require("../models/paidBeat_schema");
 
 app.use("/beats", express.static("./upload/freebeats"));
-x;
+
 const storage = multer.diskStorage({
   destination: "./upload/freebeats",
   filename: (req, file, cb) => {
@@ -25,12 +25,12 @@ const upload = multer({
 });
 
 router.post("/postPaidBeat", (req, res) => {
-  const beat = paidBeat_schema({
-    _id: mongoose.Types.ObjectId(),
+  const beat = new paidBeat_schema({
+    _id: new mongoose.Types.ObjectId(),
     beatName: req.body.beatName,
-    producerName: req.body.beatName,
-    beatUrl: req.body.beatName,
-    price: req.body.beatName,
+    producerName: req.body.producerName,
+    beatUrl: req.body.beatUrl,
+    price: req.body.price,
   });
   beat
     .save()
