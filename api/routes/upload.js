@@ -5,6 +5,7 @@ const { model } = require("mongoose");
 const mongoose = require("mongoose");
 const Beat = require("../models/beat");
 const multer = require("multer");
+const PaidBeat = require("../models/paidBeat_schema");
 
 const path = require("path");
 const paidBeat_schema = require("../models/paidBeat_schema");
@@ -44,6 +45,16 @@ router.post("/postPaidBeat", (req, res) => {
       res.status(500).json({
         error: "Internal Server Error",
       });
+    });
+});
+
+router.get("/getPaidBeats", (req, res) => {
+  PaidBeat.find()
+    .then((paidBeat) => {
+      res.json({ paidBeat });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: "Internal Server Error" });
     });
 });
 
