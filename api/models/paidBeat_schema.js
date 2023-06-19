@@ -5,6 +5,7 @@ const paidBeat = mongoose.Schema({
   beatName: String,
   producerName: String,
   beatUrl: String,
+  sampleUrl: String,
   price: String,
 });
 

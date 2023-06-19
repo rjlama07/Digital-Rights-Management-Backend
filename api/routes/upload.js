@@ -32,6 +32,7 @@ router.post("/postPaidBeat", (req, res) => {
     producerName: req.body.producerName,
     beatUrl: req.body.beatUrl,
     price: req.body.price,
+    sampleUrl: req.body.sampleUrl,
   });
   beat
     .save()
