@@ -9,8 +9,14 @@ const PaidBeat = require("../models/paidBeat_schema");
 
 const path = require("path");
 const paidBeat_schema = require("../models/paidBeat_schema");
-
+const cloudinary = require("cloudinary").v2;
 app.use("/beats", express.static("./upload/freebeats"));
+
+cloudinary.config({
+  cloud_name: "dyabowhkn",
+  api_key: "119218244742822",
+  api_secret: "eqzjre-21ikeaEYO4EDlRp3kzzI",
+});
 
 const storage = multer.diskStorage({
   destination: "./upload/freebeats",
@@ -70,7 +76,7 @@ router.get("/getBeats", (req, res) => {
 });
 
 router.post("/postBeat", (req, res) => {
-  upload.single("beats")(req, res, function (err) {
+  upload.single("beats")(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred during file upload
       return res.status(400).json({ msg: "Error uploading file" });
@@ -83,10 +89,22 @@ router.post("/postBeat", (req, res) => {
     if (!req.file) {
       return res.status(400).json({ msg: "No file uploaded" });
     }
-    const fileLink = `https://${req.get("host")}/beats/${req.file.filename}`;
+
+    const cloudinaryResult = await cloudinary.uploader
+      .upload(`./upload/freebeats/${req.file.filename}`, {
+        resource_type: "raw",
+        public_id: `AudioUploads/${req.file.filename}`,
+      })
+      .catch((error) => {
+        console.error(error.message);
+        return res
+          .status(500)
+          .json({ msg: "Internal Server Error", error: error.message });
+      });
+
     res.status(200).json({
       msg: "Upload successfully",
-      beatUrl: fileLink,
+      beatUrl: cloudinaryResult.secure_url,
     });
   });
 });
