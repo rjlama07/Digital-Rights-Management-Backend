@@ -90,7 +90,7 @@ router.post("/postBeat", (req, res) => {
       return res.status(400).json({ msg: "No file uploaded" });
     }
 
-    const filePath = path.join("./tmp/upload/freebeats", req.file.filename);
+    const filePath = path.join("./upload/freebeats", req.file.filename);
 
     const cloudinaryResult = await cloudinary.uploader
       .upload(filePath, {
