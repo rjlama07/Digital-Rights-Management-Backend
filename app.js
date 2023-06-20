@@ -16,7 +16,7 @@ mongose.connection.on("error", (err) => {
 });
 app.use(cors()); //
 
-app.use("/beats", express.static("./upload/freebeats"));
+app.use("/beats", express.static("./tmp/upload/freebeats"));
 
 mongose.connection.on("connected", (connected) => {
   console.log("Connection established");
