@@ -30,7 +30,7 @@ app.use("/beats", express.static("./upload/freebeats"));
 
 app.use(
   cors({
-    origin: "https://drm-8gc9.onrender.com",
+    origin: "https://real-erin-bighorn-sheep-sari.cyclic.app",
   })
 );
 
