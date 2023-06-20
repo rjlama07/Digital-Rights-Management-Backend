@@ -90,12 +90,15 @@ router.post("/postBeat", (req, res) => {
       return res.status(400).json({ msg: "No file uploaded" });
     }
 
+    const filePath = path.join("./upload/freebeats", req.file.filename);
+
     const cloudinaryResult = await cloudinary.uploader
-      .upload(`./upload/freebeats/${req.file.filename}`, {
+      .upload(filePath, {
         resource_type: "raw",
         public_id: `AudioUploads/${req.file.filename}`,
       })
       .catch((error) => {
+        console.log(error);
         console.error(error.message);
         return res
           .status(500)
