@@ -27,6 +27,11 @@ app.use("/user", userRoute);
 app.use("/vehical", vehicalRoute);
 app.use("/upload", uplaodRoute);
 app.use("/beats", express.static("./upload/freebeats"));
-app.use(cors()); //
+
+app.use(
+  cors({
+    origin: "https://nepalihiphub.netlify.app",
+  })
+);
 
 module.exports = app;
