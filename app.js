@@ -27,11 +27,6 @@ app.use("/user", userRoute);
 app.use("/vehical", vehicalRoute);
 app.use("/upload", uplaodRoute);
 app.use("/beats", express.static("./upload/freebeats"));
-
-app.use(
-  cors({
-    origin: "https://real-erin-bighorn-sheep-sari.cyclic.app",
-  })
-);
+app.use(cors()); //
 
 module.exports = app;
