@@ -28,4 +28,6 @@ app.use("/vehical", vehicalRoute);
 app.use("/upload", uplaodRoute);
 app.use("/beats", express.static("./upload/freebeats"));
 
+app.use(cors()); //
+
 module.exports = app;

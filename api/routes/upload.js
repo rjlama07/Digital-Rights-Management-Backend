@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const Beat = require("../models/beat");
 const multer = require("multer");
 const PaidBeat = require("../models/paidBeat_schema");
+const Studio = require("../models/studio");
 
 const path = require("path");
 const paidBeat_schema = require("../models/paidBeat_schema");
@@ -112,6 +113,42 @@ router.post("/postBeat", (req, res) => {
   });
 });
 
+router.post("/uploadImage", (req, res) => {
+  upload.single("image")(req, res, async function (err) {
+    if (err instanceof multer.MulterError) {
+      // A Multer error occurred during file upload
+      return res.status(400).json({ msg: "Error uploading file" });
+    } else if (err) {
+      // An unknown error occurred
+      console.log(err);
+      return res.status(500).json({ msg: "Internal Server Error" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ msg: "No file uploaded" });
+    }
+
+    const filePath = path.join("./upload/freebeats", req.file.filename);
+
+    const cloudinaryResult = await cloudinary.uploader
+      .upload(filePath, {
+        public_id: `Image/${req.file.filename}`,
+      })
+      .catch((error) => {
+        console.log(error);
+        console.error(error.message);
+        return res
+          .status(500)
+          .json({ msg: "Internal Server Error", error: error.message });
+      });
+
+    res.status(200).json({
+      msg: "Upload successfully",
+      imageUrl: cloudinaryResult.secure_url,
+    });
+  });
+});
+
 router.post("/uploadBeat", (req, res, next) => {
   const beat = new Beat({
     _id: new mongoose.Types.ObjectId(),
@@ -125,6 +162,30 @@ router.post("/uploadBeat", (req, res, next) => {
     .then((result) => {
       res.status(200).json({
         message: "Beat Uploaded Sucesfully",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: "Internal Server Error",
+      });
+    });
+});
+router.post("/addStudio", (req, res, next) => {
+  const studio = new Studio({
+    _id: new mongoose.Types.ObjectId(),
+    name: req.body.name,
+    description: req.body.description,
+    location: req.body.location,
+    price: req.body.price,
+    imageUrl: req.body.imageUrl,
+    rating: 2,
+  });
+  studio
+    .save()
+    .then((result) => {
+      res.status(200).json({
+        message: "studio added Sucesfully",
       });
     })
     .catch((err) => {
