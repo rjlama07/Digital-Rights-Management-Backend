@@ -76,6 +76,16 @@ router.get("/getBeats", (req, res) => {
     });
 });
 
+router.get("/getStudio", (req, res) => {
+  Studio.find()
+    .then((studio) => {
+      res.json({ studio });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: "Internal Server Error" });
+    });
+});
+
 router.post("/postBeat", (req, res) => {
   upload.single("beats")(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
