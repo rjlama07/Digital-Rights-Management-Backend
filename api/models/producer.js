@@ -10,7 +10,7 @@ const producerSchema = mongoose.Schema({
   rating: String,
   profileUrl: String,
   activeSince: String,
-  aveageDelivaryTime: String,
+  averageDeliveryTime: String,
   genre: String,
   package: {
     basic: {
