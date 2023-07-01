@@ -7,6 +7,8 @@ const cors = require("cors");
 const userRoute = require("./api/routes/user");
 const vehicalRoute = require("./api/routes/vehical");
 const uplaodRoute = require("./api/routes/upload");
+const producerRoute = require("./api/routes/producer");
+
 mongose.connect(
   "mongodb+srv://riteshlama5:s123456@rentgaram.fmh4lvu.mongodb.net/?retryWrites=true&w=majority"
 );
@@ -26,6 +28,7 @@ app.use(bodyParser.json());
 app.use("/user", userRoute);
 app.use("/vehical", vehicalRoute);
 app.use("/upload", uplaodRoute);
+app.use("/producer", producerRoute);
 app.use("/beats", express.static("./upload/freebeats"));
 
 app.use(cors()); //
