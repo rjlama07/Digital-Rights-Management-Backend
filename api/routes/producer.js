@@ -31,4 +31,14 @@ router.post("/addProducer", (req, res) => {
     });
 });
 
+router.get("/getProducers", (req, res) => {
+  Producer.find()
+    .then((producer) => {
+      res.json({ producer });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: "Internal Server Error" });
+    });
+});
+
 module.exports = router;
