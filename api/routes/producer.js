@@ -44,17 +44,23 @@ router.get("/getProducers", (req, res) => {
 router.post("/deleteProducers", (req, res) => {
   const { id } = req.body;
 
-  Producer.findOneAndDelete({ id })
+  if (!id) {
+    return res
+      .status(400)
+      .json({ error: "Missing 'id' parameter in the request body" });
+  }
+
+  Producer.findOneAndDelete({ _id: req.body.id })
     .then((producer) => {
       if (producer) {
-        res.json({ message: "Producer deleted successfully" });
+        return res.json({ message: "Producer deleted successfully" });
       } else {
-        res.status(404).json({ error: "Producer not found" });
+        return res.status(404).json({ error: "Producer not found" });
       }
     })
     .catch((error) => {
-      res.status(500).json({ error: "Internal Server Error" });
+      console.error("Error:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
     });
 });
-
 module.exports = router;
