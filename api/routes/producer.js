@@ -45,11 +45,22 @@ router.post("/deleteProducers", (req, res) => {
   console.log(req.body);
   console.log(req.body.id);
   console.log("Marasini muji");
-  Producer.deleteOne({ id: req.body.id })
+
+  Producer.findOne({ id: req.body.id })
     .then((producer) => {
-      res.json({
-        message: "Producer delted sucessfully",
-      });
+      if (producer) {
+        Producer.deleteOne({ id: req.body.id })
+          .then(() => {
+            res.json({
+              message: "Producer deleted successfully",
+            });
+          })
+          .catch((error) => {
+            res.status(500).json({ error: "Internal Server Error" });
+          });
+      } else {
+        res.status(404).json({ error: "Producer not found" });
+      }
     })
     .catch((error) => {
       res.status(500).json({ error: "Internal Server Error" });
