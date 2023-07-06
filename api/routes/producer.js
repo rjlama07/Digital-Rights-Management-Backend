@@ -42,9 +42,9 @@ router.get("/getProducers", (req, res) => {
 });
 
 router.post("/deleteProducers", (req, res) => {
+  console.log(req);
   Producer.deleteOne({ id: req.body.id })
     .then((producer) => {
-      console.log(req);
       res.json({
         message: "Producer delted sucessfully",
       });
