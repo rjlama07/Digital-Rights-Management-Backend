@@ -41,4 +41,16 @@ router.get("/getProducers", (req, res) => {
     });
 });
 
+router.delete("/deleteProducers", (req, res) => {
+  Producer.deleteOne({ id: req.body.id })
+    .then((producer) => {
+      res.json({
+        message: "Producer delted sucessfully",
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: "Internal Server Error" });
+    });
+});
+
 module.exports = router;
