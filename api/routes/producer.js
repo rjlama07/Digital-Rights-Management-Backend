@@ -41,7 +41,7 @@ router.get("/getProducers", (req, res) => {
     });
 });
 
-router.delete("/deleteProducers", (req, res) => {
+router.post("/deleteProducers", (req, res) => {
   Producer.deleteOne({ id: req.body.id })
     .then((producer) => {
       res.json({
