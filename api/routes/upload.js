@@ -165,7 +165,7 @@ router.post("/uploadBeat", (req, res, next) => {
     beatName: req.body.beatName,
     producerName: req.body.producerName,
     beatUrl: req.body.beatUrl,
-    price: req.body.price,
+    imageUrl: req.body.imageUrl,
   });
   beat
     .save()

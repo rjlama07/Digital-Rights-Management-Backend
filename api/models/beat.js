@@ -9,6 +9,7 @@ const beatSchema = mongoose.Schema({
   beatName: String,
   producerName: String,
   beatUrl: String,
+  imageUrl: String,
 });
 
 module.exports = mongoose.model("beat", beatSchema);
