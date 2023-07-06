@@ -42,7 +42,9 @@ router.get("/getProducers", (req, res) => {
 });
 
 router.post("/deleteProducers", (req, res) => {
-  console.log(req);
+  console.log(req.body);
+  console.log(req.body.id);
+  console.log("Marasini muji");
   Producer.deleteOne({ id: req.body.id })
     .then((producer) => {
       res.json({
