@@ -24,12 +24,13 @@ router.post("/login", (req, res, next) => {
           } else {
             const token = jwt.sign(
               {
+                id: user[0]._id,
                 email: user[0].email,
                 role: user[0].role,
                 firstName: user[0].firstName,
                 lastName: user[0].lastName,
               },
-              "key 123",
+              "marasini",
               {
                 expiresIn: "24h",
               }
@@ -74,6 +75,7 @@ router.post("/signup", async (req, res, next) => {
           email: req.body.email,
           password: hash,
           role: "User",
+          imageUrl: "https://i.stack.imgur.com/l60Hf.png",
         });
         user
           .save()
@@ -91,6 +93,60 @@ router.post("/signup", async (req, res, next) => {
       }
     });
   }
+});
+
+function verifyToken(req, res, next) {
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader != "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const token = bearer[1];
+    req.token = token;
+    next();
+  } else {
+    res.status(401).json({
+      error: "token is not valid",
+    });
+  }
+}
+
+router.get("/getUserInfo", verifyToken, (req, res, next) => {
+  jwt.verify(req.token, "marasini", (err, authData) => {
+    if (err) {
+      res.status(401).json({
+        error: "token is not valid",
+      });
+    } else {
+      User.find({ _id: authData["id"] })
+        .exec()
+        .then((user) => {
+          if (user.length < 1) {
+            return res.status(401).json({
+              error: "User not exist",
+            });
+          } else {
+            res.status(200).json({
+              message: "User Data",
+              email: user[0].email,
+              role: user[0].role,
+              firstName: user[0].firstName,
+              lastName: user[0].lastName,
+              imageUrl:
+                user[0].imageUrl != null
+                  ? user[0].imageUrl
+                  : "https://i.stack.imgur.com/l60Hf.png",
+            });
+          }
+        })
+        .catch((err) => {
+          res.status(500).json({
+            error: err,
+          });
+        });
+      // res.status(200).json({
+      //   authData,
+      // });
+    }
+  });
 });
 
 module.exports = router;
