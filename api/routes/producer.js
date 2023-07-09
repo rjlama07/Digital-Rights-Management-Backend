@@ -2,7 +2,7 @@ const express = require("express");
 const { model } = require("mongoose");
 const mongoose = require("mongoose");
 const Producer = require("../models/producer");
-
+const User = require("../models/user");
 const router = express.Router();
 
 router.post("/addProducer", (req, res) => {

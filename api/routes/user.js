@@ -7,7 +7,6 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 
 router.post("/login", (req, res, next) => {
-  console.log("hello");
   User.find({ email: req.body.email })
     .exec()
     .then((user) => {
@@ -37,10 +36,9 @@ router.post("/login", (req, res, next) => {
             );
             res.status(200).json({
               message: "Login successfull",
-              email: user[0].email,
+
               role: user[0].role,
-              firstName: user[0].firstName,
-              lastName: user[0].lastName,
+
               accessToken: token,
             });
           }

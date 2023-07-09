@@ -9,10 +9,12 @@ const PaidBeat = require("../models/paidBeat_schema");
 const Studio = require("../models/studio");
 
 const path = require("path");
+const User = require("../models/user");
 const paidBeat_schema = require("../models/paidBeat_schema");
 const cloudinary = require("cloudinary").v2;
 app.use("/beats", express.static("./upload/freebeats"));
-
+const jwt = require("jsonwebtoken");
+const user = require("../models/user");
 cloudinary.config({
   cloud_name: "dyabowhkn",
   api_key: "119218244742822",
@@ -124,38 +126,123 @@ router.post("/postBeat", (req, res) => {
 });
 
 router.post("/uploadImage", (req, res) => {
-  upload.single("image")(req, res, async function (err) {
-    if (err instanceof multer.MulterError) {
-      // A Multer error occurred during file upload
-      return res.status(400).json({ msg: "Error uploading file" });
-    } else if (err) {
-      // An unknown error occurred
-      console.log(err);
-      return res.status(500).json({ msg: "Internal Server Error" });
-    }
-
-    if (!req.file) {
-      return res.status(400).json({ msg: "No file uploaded" });
-    }
-
-    const filePath = path.join("./upload/freebeats", req.file.filename);
-
-    const cloudinaryResult = await cloudinary.uploader
-      .upload(filePath, {
-        public_id: `Image/${req.file.filename}`,
-      })
-      .catch((error) => {
-        console.log(error);
-        console.error(error.message);
-        return res
-          .status(500)
-          .json({ msg: "Internal Server Error", error: error.message });
+  jwt.verify(req.token, "marasini", (err, authData) => {
+    if (err) {
+      res.status(401).json({
+        error: "token is not valid",
       });
+    } else {
+      upload.single("image")(req, res, async function (err) {
+        if (err instanceof multer.MulterError) {
+          // A Multer error occurred during file upload
+          return res.status(400).json({ msg: "Error uploading file" });
+        } else if (err) {
+          // An unknown error occurred
+          console.log(err);
+          return res.status(500).json({ msg: "Internal Server Error" });
+        }
 
-    res.status(200).json({
-      msg: "Upload successfully",
-      imageUrl: cloudinaryResult.secure_url,
+        if (!req.file) {
+          return res.status(400).json({ msg: "No file uploaded" });
+        }
+
+        const filePath = path.join("./upload/freebeats", req.file.filename);
+
+        const cloudinaryResult = await cloudinary.uploader
+          .upload(filePath, {
+            public_id: `Image/${req.file.filename}`,
+          })
+          .catch((error) => {
+            console.log(error);
+            console.error(error.message);
+            return res
+              .status(500)
+              .json({ msg: "Internal Server Error", error: error.message });
+          });
+
+        User.find();
+
+        res.status(200).json({
+          msg: "Upload successfully",
+          imageUrl: cloudinaryResult.secure_url,
+        });
+      });
+    }
+  });
+});
+function verifyToken(req, res, next) {
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader != "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const token = bearer[1];
+    req.token = token;
+    next();
+  } else {
+    res.status(401).json({
+      error: "token is not valid",
     });
+  }
+}
+
+router.post("/changeProfileImage", verifyToken, (req, res, next) => {
+  jwt.verify(req.token, "marasini", (err, authData) => {
+    if (err) {
+      res.status(401).json({
+        error: "token is not valid",
+      });
+    } else {
+      upload.single("image")(req, res, async function (err) {
+        if (err instanceof multer.MulterError) {
+          // A Multer error occurred during file upload
+          return res.status(400).json({ msg: "Error uploading file" });
+        } else if (err) {
+          // An unknown error occurred
+          console.log(err);
+          return res.status(500).json({ msg: "Internal Server Error" });
+        }
+
+        if (!req.file) {
+          return res.status(400).json({ msg: "No file uploaded" });
+        }
+
+        const filePath = path.join("./upload/freebeats", req.file.filename);
+
+        const cloudinaryResult = await cloudinary.uploader
+          .upload(filePath, {
+            public_id: `Image/${req.file.filename}`,
+          })
+          .catch((error) => {
+            console.log(error);
+            console.error(error.message);
+            return res
+              .status(500)
+              .json({ msg: "Internal Server Error", error: error.message });
+          });
+
+        User.findOneAndUpdate(
+          { _id: authData["id"] },
+          { imageUrl: cloudinaryResult.secure_url }
+        )
+          .exec()
+          .then((user) => {
+            if (!user) {
+              return res.status(401).json({
+                error: "User does not exist",
+              });
+            } else {
+              res.status(200).json({
+                msg: "Upload successfully",
+                imageUrl: cloudinaryResult.secure_url,
+              });
+            }
+          })
+          .catch((err) => {
+            res.status(500).json({
+              error: err,
+            });
+          });
+      });
+    }
   });
 });
 
