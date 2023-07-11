@@ -82,6 +82,12 @@ router.get("/getPaidBeats", (req, res) => {
 });
 
 router.get("/getBeats", (req, res) => {
+  const bearerHeader = req.headers["authorization"];
+  if (bearerHeader != undefined) {
+    const bearer = bearerHeader.split(" ");
+    const token = bearer[1];
+    req.token = token;
+  }
   jwt.verify(req.token, "marasini", async (err, authData) => {
     if (err) {
       const beats = Beat.find().then((beats) => {
