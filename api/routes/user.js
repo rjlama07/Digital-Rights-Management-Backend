@@ -51,6 +51,63 @@ router.post("/login", (req, res, next) => {
       });
     });
 });
+router.post("/updatePassword", verifyToken, (req, res, next) => {
+  jwt.verify(req.token, "marasini", (err, authData) => {
+    if (err) {
+      res.status(401).json({
+        error: "token is not valid",
+      });
+    } else {
+      User.find({ _id: authData["id"] })
+        .exec()
+        .then((user) => {
+          if (user.length < 1) {
+            return res.status(401).json({
+              error: "User not exist",
+            });
+          } else {
+            bcrypt.compare(
+              req.body.oldPassword,
+              user[0].password,
+              (err, result) => {
+                if (!result) {
+                  return res.status(401).json({
+                    error: "Invalid Password",
+                  });
+                } else {
+                  bcrypt.hash(req.body.newPassword, 10, (err, hash) => {
+                    if (err) {
+                      console.log(err);
+                      res.status(500).json({
+                        error: "Internal Server Error",
+                      });
+                    } else {
+                      User.updateOne(
+                        { _id: authData["id"] },
+                        { $set: { password: hash } }
+                      )
+                        .exec()
+                        .then((result) => {
+                          res.status(200).json({
+                            message: "Password Updated Successfully",
+                          });
+                        })
+                        .catch((err) => {
+                          console.log(err);
+                          res.status(500).json({
+                            error: "Internal Server Error",
+                          });
+                        });
+                    }
+                  });
+                }
+              }
+            );
+          }
+        });
+    }
+  });
+});
 
 router.post("/signup", async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
