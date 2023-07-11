@@ -7,6 +7,7 @@ const Beat = require("../models/beat");
 const multer = require("multer");
 const PaidBeat = require("../models/paidBeat_schema");
 const Studio = require("../models/studio");
+const Favorite = require("../models/favourite");
 
 const path = require("path");
 const User = require("../models/user");
@@ -33,6 +34,20 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
 });
+
+function verifyToken(req, res, next) {
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader != "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const token = bearer[1];
+    req.token = token;
+    next();
+  } else {
+    res.status(401).json({
+      error: "token is not valid",
+    });
+  }
+}
 
 router.post("/postPaidBeat", (req, res) => {
   const beat = new paidBeat_schema({
@@ -63,19 +78,35 @@ router.get("/getPaidBeats", (req, res) => {
     .then((paidBeat) => {
       res.json({ paidBeat });
     })
-    .catch((error) => {
-      res.status(500).json({ error: "Internal Server Error" });
-    });
+    .catch((error) => {});
 });
 
-router.get("/getBeats", (req, res) => {
-  Beat.find()
-    .then((beats) => {
-      res.json({ beats });
-    })
-    .catch((error) => {
-      res.status(500).json({ error: "Internal Server Error" });
-    });
+router.get("/getBeats", verifyToken, (req, res) => {
+  jwt.verify(req.token, "marasini", async (err, authData) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    } else {
+      try {
+        const userId = authData["id"]; // Assuming the user ID is passed in the request body
+
+        const beats = await Beat.find();
+
+        const beatsWithFavStatus = await Promise.all(
+          beats.map(async (beat) => {
+            const isFav = await Favorite.exists({
+              userId,
+              productId: beat.id,
+            });
+            return { ...beat._doc, isFav: !!isFav };
+          })
+        );
+
+        res.json({ beats: beatsWithFavStatus });
+      } catch (error) {
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    }
+  });
 });
 
 router.get("/getStudio", (req, res) => {
@@ -162,19 +193,6 @@ router.post("/uploadImage", (req, res) => {
     });
   });
 });
-function verifyToken(req, res, next) {
-  const bearerHeader = req.headers["authorization"];
-  if (typeof bearerHeader != "undefined") {
-    const bearer = bearerHeader.split(" ");
-    const token = bearer[1];
-    req.token = token;
-    next();
-  } else {
-    res.status(401).json({
-      error: "token is not valid",
-    });
-  }
-}
 
 router.post("/changeProfileImage", verifyToken, (req, res, next) => {
   jwt.verify(req.token, "marasini", (err, authData) => {
