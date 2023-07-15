@@ -81,10 +81,12 @@ router.get("/getPaidBeats", (req, res) => {
     .catch((error) => {});
 });
 
-router.get("/getBeats", verifyToken, (req, res) => {
+router.get("/getBeats", (req, res) => {
   jwt.verify(req.token, "marasini", async (err, authData) => {
     if (err) {
-      res.status(500).json({ error: err });
+      const beats = Beat.find().then((beats) => {
+        res.json({ beats: beats });
+      });
     } else {
       try {
         const userId = authData["id"]; // Assuming the user ID is passed in the request body
