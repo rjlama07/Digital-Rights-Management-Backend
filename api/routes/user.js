@@ -29,7 +29,7 @@ router.post("/login", (req, res, next) => {
                 firstName: user[0].firstName,
                 lastName: user[0].lastName,
               },
-              "marasini",
+              "1234mmm",
               {
                 expiresIn: "120h",
               }
@@ -150,6 +150,119 @@ router.post("/signup", async (req, res, next) => {
   }
 });
 
+
+router.get("/getArtistFollowing", verifyToken, (req, res, next) => {
+  jwt.verify(req.token, "1234mmm", (err, authData) => {
+    if (err) {
+      res.status(401).json({
+        error: "token is not valid",
+      });
+    } else {
+      User.find({ _id: authData["id"] })
+        .populate("artistFollowing")
+        .exec()
+        .then((user) => {
+          if (user.length < 1) {
+            return res.status(401).json({
+              error: "User not exist",
+            });
+          } else {
+            res.status(200).json({
+              message: "Artist Following",
+              artistFollowing: user[0].artistFollowing,
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(500).json({
+            error: err,
+          });
+        });
+    }
+  });
+});
+
+
+router.put("/followArtist", verifyToken, (req, res, next) => {
+  jwt.verify(req.token, "1234mmm", (err, authData) => {
+    if (err) {
+      res.status(401).json({
+        error: "token is not valid",
+      });
+    } else {
+      User.find({ _id: authData["id"] })
+        .exec()
+        .then((user) => {
+          if (user.length < 1) {
+            return res.status(401).json({
+              error: "User not exist",
+            });
+          } else {
+            User.updateOne(
+              { _id: authData["id"] },
+              { $push: { artistFollowing: req.body.artistId } }
+            )
+              .exec()
+              .then((result) => {
+                res.status(200).json({
+                  message: "Artist Followed",
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+                res.status(500).json({
+                  error: "Internal Server Error",
+                });
+              });
+          }
+        });
+    }
+  });
+});
+router.put("/unfollowArtist", verifyToken, (req, res, next) => {
+  jwt.verify(req.token, "1234mmm", (err, authData) => {
+    if (err) {
+      res.status(401).json({
+        error: "token is not valid",
+      });
+    } else {
+      User.find({ _id: authData.id })
+        .exec()
+        .then((user) => {
+          if (user.length < 1) {
+            return res.status(401).json({
+              error: "User does not exist",
+            });
+          } else {
+            User.updateOne(
+              { _id: authData.id },
+              { $pull: { artistFollowing: req.body.artistId } } // Removes the artistId from the artistFollowing array
+            )
+              .exec()
+              .then((result) => {
+                res.status(200).json({
+                  message: "Artist Unfollowed",
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+                res.status(500).json({
+                  error: "Internal Server Error",
+                });
+              });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(500).json({
+            error: "Internal Server Error",
+          });
+        });
+    }
+  });
+});
+
 function verifyToken(req, res, next) {
   const bearerHeader = req.headers["authorization"];
   if (typeof bearerHeader != "undefined") {
@@ -165,7 +278,7 @@ function verifyToken(req, res, next) {
 }
 
 router.get("/getUserInfo", verifyToken, (req, res, next) => {
-  jwt.verify(req.token, "marasini", (err, authData) => {
+  jwt.verify(req.token, "1234mmm", (err, authData) => {
     if (err) {
       res.status(401).json({
         error: "token is not valid",

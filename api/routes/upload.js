@@ -311,6 +311,24 @@ router.post("/addStudio", (req, res, next) => {
     });
 });
 
+router.get("/searchBeat", (req, res) => {
+  console.log("Hello world123");
+  try {
+    console.log("after verification");
+    const search = req.query.search;
+    console.log(search);
+    Beat.find({ beatName: { $regex: search, $options: "i" } })
+      .then((beats) => {
+        res.json({ beats });
+      })
+      .catch((error) => {
+        res.status(500).json({ error: "Internal Server Error" });
+      });
+  } catch (error) {
+    console.log("Hello world");
+  }
+});
+
 router.get("/getFreeBeats");
 
 module.exports = router;

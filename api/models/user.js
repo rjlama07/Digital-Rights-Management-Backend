@@ -12,6 +12,12 @@ const userSchema = mongoose.Schema({
   password: String,
   role: String,
   imageUrl: String,
+  artistFollowing: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "artist",
+    },
+  ],
 });
 
 module.exports = mongoose.model("user", userSchema);

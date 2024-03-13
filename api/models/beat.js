@@ -12,4 +12,5 @@ const beatSchema = mongoose.Schema({
   imageUrl: String,
 });
 
+
 module.exports = mongoose.model("beat", beatSchema);

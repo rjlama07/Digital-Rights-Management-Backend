@@ -9,10 +9,22 @@ const vehicalRoute = require("./api/routes/vehical");
 const uplaodRoute = require("./api/routes/upload");
 const producerRoute = require("./api/routes/producer");
 const favouriteRoute = require("./api/routes/favourite");
+const artistRoute = require("./api/routes/artist");
+const songRoute=require("./api/routes/song");
+
+// mongose.connect(
+//   "mongodb+srv://np03cs4s220363:qwerty12345@cluster0.mrfhznh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+// );
+
 
 mongose.connect(
-  "mongodb+srv://riteshlama5:s123456@rentgaram.fmh4lvu.mongodb.net/?retryWrites=true&w=majority"
-);
+    "mongodb://localhost:27017/beatMandu",
+  );
+  
+
+localhost:27017
+
+
 
 mongose.connection.on("error", (err) => {
   console.log("Connection failed");
@@ -31,8 +43,11 @@ app.use("/vehical", vehicalRoute);
 app.use("/upload", uplaodRoute);
 app.use("/producer", producerRoute);
 app.use("/favourite", favouriteRoute);
+app.use("/artist", artistRoute);
 app.use("/beats", express.static("./upload/freebeats"));
+app.use("/song",songRoute);
 
 app.use(cors()); //
-
 module.exports = app;
+
+
