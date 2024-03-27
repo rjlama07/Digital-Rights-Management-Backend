@@ -5,7 +5,7 @@ const Artist = require("../models/artist_schema");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
-const User=require("../models/user");
+const User = require("../models/user");
 
 router.post("/login", (req, res, next) => {
   console.log("Hello world");
@@ -86,7 +86,6 @@ router.post("/signup", async (req, res, next) => {
   }
 });
 
-
 router.post("/follow", verifyToken, (req, res, next) => {
   jwt.verify(req.token, "1234mmm", (err, authData) => {
     if (err) {
@@ -132,91 +131,90 @@ router.post("/follow", verifyToken, (req, res, next) => {
           });
         });
     }
-  }); 
+  });
 });
 
-
-
-
-
 function verifyToken(req, res, next) {
-    const bearerHeader = req.headers["authorization"];
-    if (typeof bearerHeader != "undefined") {
-      const bearer = bearerHeader.split(" ");
-      const token = bearer[1];
-      req.token = token;
-      next();
-    } else {
-      res.status(401).json({
-        error: "token is not valid",
-      });
-    }
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader != "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const token = bearer[1];
+    req.token = token;
+    next();
+  } else {
+    res.status(401).json({
+      error: "token is not valid",
+    });
   }
-  
-  
+}
 
-  router.get("/getArtist", (req, res, next) => {
-    const bearerHeader = req.headers["authorization"];
-    console.log(bearerHeader);
-    if (bearerHeader) {
-        const bearer = bearerHeader.split(" ");
-        const token = bearer[1];
-        req.token = token;
-        jwt.verify(req.token, "1234mmm", (err, authData) => {
-            if (err) {
-                return res.status(401).json({
-                    error: err,
-                });
-            } else {
-                const userId = authData.id;
-                User.findById(userId)
-                    .exec()
-                    .then((user) => {
-                        const followingArtistIds = user.artistFollowing.map(artistId => artistId.toString()); // Assuming artistFollowing contains ObjectId(s)
-                        Artist.find()
-                            .exec()
-                            .then((artists) => {
-                                const modifiedArtists = artists.map((artist) => {
-                                    return {
-                                        ...artist._doc,
-                                        isFollowing: followingArtistIds.includes(artist._id.toString()),
-                                    };
-                                });
-                                res.status(200).json({
-                                    artists: modifiedArtists,
-                                });
-                            })
-                            .catch((err) => {
-                                console.log(err);
-                                res.status(500).json({
-                                    error: err,
-                                });
-                            });
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                        res.status(500).json({
-                            error: err,
-                        });
-                    });
-            }
+router.get("/getArtist", (req, res, next) => {
+  const bearerHeader = req.headers["authorization"];
+  console.log(bearerHeader);
+
+  if (bearerHeader) {
+    const bearer = bearerHeader.split(" ");
+    const token = bearer[1];
+    req.token = token;
+    jwt.verify(req.token, "1234mmm", (err, authData) => {
+      if (err) {
+        return res.status(401).json({
+          error: err,
         });
-    } else {
-        // No token provided, fetch all artists without considering user's following list
-        Artist.find()
-            .exec()
-            .then((artists) => {
-                res.status(200).json({
-                    artists: artists,
+      } else {
+        const userId = authData.id;
+        User.findById(userId)
+          .exec()
+          .then((user) => {
+            const followingArtistIds = user.artistFollowing.map((artistId) =>
+              artistId.toString()
+            ); // Assuming artistFollowing contains ObjectId(s)
+            Artist.find()
+              .exec()
+              .then((artists) => {
+                const modifiedArtists = artists.map((artist) => {
+                  return {
+                    ...artist._doc,
+                    isFollowing: followingArtistIds.includes(
+                      artist._id.toString()
+                    ),
+                  };
                 });
-            })
-            .catch((err) => {
+                res.status(200).json({
+                  artists: modifiedArtists,
+                });
+              })
+              .catch((err) => {
                 console.log(err);
                 res.status(500).json({
-                    error: err,
+                  error: err,
                 });
+              });
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: err,
             });
-    }
+          });
+      }
+    });
+  } else {
+    // No token provided, fetch all artists without considering user's following list
+    Artist.find()
+      .exec()
+      .then((artists) => {
+        res.status(200).json({
+          artists: artists,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err,
+        });
+      });
+  }
 });
 
 module.exports = router;
