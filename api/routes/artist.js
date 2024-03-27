@@ -87,6 +87,58 @@ router.post("/signup", async (req, res, next) => {
 });
 
 
+router.post("/follow", verifyToken, (req, res, next) => {
+  jwt.verify(req.token, "1234mmm", (err, authData) => {
+    if (err) {
+      return res.status(401).json({
+        error: err,
+      });
+    } else {
+      const artistId = req.body.artistId;
+      const userId = authData.id;
+      User.findById(userId)
+        .exec()
+        .then((user) => {
+          if (user) {
+            if (user.artistFollowing.includes(artistId)) {
+              res.status(200).json({
+                message: "Already following",
+              });
+            } else {
+              user.artistFollowing.push(artistId);
+              user
+                .save()
+                .then((result) => {
+                  res.status(200).json({
+                    message: "Following artist",
+                    result: result,
+                  });
+                })
+                .catch((err) => {
+                  res.status(500).json({
+                    error: err,
+                  });
+                });
+            }
+          } else {
+            res.status(404).json({
+              message: "User not found",
+            });
+          }
+        })
+        .catch((err) => {
+          res.status(500).json({
+            error: err,
+          });
+        });
+    }
+  }); 
+});
+
+
+
+
+
 function verifyToken(req, res, next) {
     const bearerHeader = req.headers["authorization"];
     if (typeof bearerHeader != "undefined") {
@@ -105,6 +157,7 @@ function verifyToken(req, res, next) {
 
   router.get("/getArtist", (req, res, next) => {
     const bearerHeader = req.headers["authorization"];
+    console.log(bearerHeader);
     if (bearerHeader) {
         const bearer = bearerHeader.split(" ");
         const token = bearer[1];
