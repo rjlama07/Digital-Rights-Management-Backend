@@ -14,13 +14,13 @@ const songRoute = require("./api/routes/song");
 const albumRoute = require("./api/routes/album");
 const oAuthRoute = require("./api/routes/oauth");
 
-// mongose.connect(
-//   "mongodb+srv://np03cs4s220363:qwerty12345@cluster0.mrfhznh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-// );
+mongose.connect(
+  "mongodb+srv://np03cs4s220363:qwerty12345@cluster0.mrfhznh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+);
 
-mongose.connect("mongodb://localhost:27017/beatMandu");
+// mongose.connect("mongodb://localhost:27017/beatMandu");
 
-localhost: 27017;
+// localhost: 27017;
 
 mongose.connection.on("error", (err) => {
   console.log("Connection failed");
