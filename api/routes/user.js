@@ -5,6 +5,7 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
+const Artist = require("../models/artist_schema");
 
 router.post("/login", (req, res, next) => {
   User.find({ email: req.body.email })
@@ -38,7 +39,7 @@ router.post("/login", (req, res, next) => {
               message: "Login successfull",
 
               role: user[0].role,
-
+              artistFollowing: user[0].artistFollowing,
               accessToken: token,
             });
           }
@@ -150,7 +151,6 @@ router.post("/signup", async (req, res, next) => {
   }
 });
 
-
 router.get("/getArtistFollowing", verifyToken, (req, res, next) => {
   jwt.verify(req.token, "1234mmm", (err, authData) => {
     if (err) {
@@ -182,7 +182,6 @@ router.get("/getArtistFollowing", verifyToken, (req, res, next) => {
     }
   });
 });
-
 
 router.put("/followArtist", verifyToken, (req, res, next) => {
   jwt.verify(req.token, "1234mmm", (err, authData) => {
@@ -220,6 +219,47 @@ router.put("/followArtist", verifyToken, (req, res, next) => {
     }
   });
 });
+
+router.put("/followMultipleArtist", verifyToken, (req, res, next) => {
+  jwt.verify(req.token, "1234mmm", (err, authData) => {
+    if (err) {
+      res.status(401).json({
+        error: "token is not valid",
+      });
+    } else {
+      User.find({ _id: authData["id"] })
+        .exec()
+        .then((user) => {
+          if (user.length < 1) {
+            return res.status(401).json({
+              error: "User not exist",
+            });
+          } else {
+            /// req.body.artistId is an array of artistId
+            User.updateOne(
+              { _id: authData["id"] },
+              {
+                $push: { artistFollowing: { $each: req.body.artistId } },
+              }
+            )
+              .exec()
+              .then((result) => {
+                res.status(200).json({
+                  message: "Artist Followed",
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+                res.status(500).json({
+                  error: "Internal Server Error",
+                });
+              });
+          }
+        });
+    }
+  });
+});
+
 router.put("/unfollowArtist", verifyToken, (req, res, next) => {
   jwt.verify(req.token, "1234mmm", (err, authData) => {
     if (err) {
@@ -313,6 +353,50 @@ router.get("/getUserInfo", verifyToken, (req, res, next) => {
       // res.status(200).json({
       //   authData,
       // });
+    }
+  });
+});
+
+router.get("/getUserLibrary", verifyToken, (req, res, next) => {
+  jwt.verify(req.token, "1234mmm", (err, authData) => {
+    if (err) {
+      res.status(401).json({
+        error: "token is not valid",
+      });
+    } else {
+      User.findOne({ _id: authData["id"] })
+        .exec()
+        .then((user) => {
+          if (!user) {
+            return res.status(401).json({
+              error: "User not exist",
+            });
+          } else {
+            // Fetch artist following
+            const artistIds = user.artistFollowing; // Assuming artistFollowing is an array of artist IDs
+
+            // Fetch artists based on the IDs
+            Artist.find({ _id: { $in: artistIds } })
+              .exec()
+              .then((artists) => {
+                res.status(200).json({
+                  message: "User Library",
+                  artistFollowing: artists,
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+                res.status(500).json({
+                  error: err,
+                });
+              });
+          }
+        })
+        .catch((err) => {
+          res.status(500).json({
+            error: err,
+          });
+        });
     }
   });
 });

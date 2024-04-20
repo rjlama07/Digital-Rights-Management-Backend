@@ -5,11 +5,8 @@ const songSchema = mongoose.Schema({
   songName: String,
   songUrl: String,
   imageUrl: String,
-  artist: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "artist", // This refers to the 'artist' model
-  },
+  artistId: String,
+  genere: String,
 });
-
 
 module.exports = mongoose.model("song", songSchema);

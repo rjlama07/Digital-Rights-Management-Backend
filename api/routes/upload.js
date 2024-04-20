@@ -203,7 +203,7 @@ router.post("/uploadImage", (req, res) => {
 });
 
 router.post("/changeProfileImage", verifyToken, (req, res, next) => {
-  jwt.verify(req.token, "marasini", (err, authData) => {
+  jwt.verify(req.token, "1234mmm", (err, authData) => {
     if (err) {
       res.status(401).json({
         error: "token is not valid",

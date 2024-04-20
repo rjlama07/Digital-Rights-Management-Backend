@@ -14,6 +14,7 @@ router.post("/addSong", (req, res) => {
     imageUrl: req.body.imageUrl,
     artist: req.body.artist,
   });
+
   song
     .save()
     .then((result) => {
@@ -31,9 +32,11 @@ router.post("/addSong", (req, res) => {
 
 router.get("/getArtistSong", (req, res) => {
   const artistId = req.query.artist;
-  console.log(artistId);
-  Song.find({ artist: artistId })
+
+  Song.find({ artistId: artistId })
     .then((song) => {
+      console.log("hellow world");
+      console.log(song);
       res.json({ song });
     })
     .catch((error) => {

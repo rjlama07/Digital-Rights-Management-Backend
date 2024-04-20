@@ -6,9 +6,10 @@ const bcrypt = require("bcrypt");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const { login } = require("../controllers/artist.controller.js");
+const Song = require("../models/song");
 
-router.post("/login", (req, res, next) => {
-  console.log("Hello world");
+router.post("/login", async (req, res, next) => {
   Artist.find({ email: req.body.email })
     .exec()
     .then((artist) => {
@@ -46,7 +47,6 @@ router.post("/login", (req, res, next) => {
       }
     });
 });
-
 router.post("/signup", async (req, res, next) => {
   const artist = await Artist.findOne({ email: req.body.email });
   if (artist == null) {
@@ -147,6 +147,75 @@ function verifyToken(req, res, next) {
     });
   }
 }
+
+router.post("/uploadArtistSong", verifyToken, (req, res, next) => {
+  jwt.verify(req.token, "1234mmm", (err, authData) => {
+    if (err) {
+      return res.status(401).json({
+        error: err,
+      });
+    } else {
+      const artistId = authData.id;
+      Artist.findById(artistId)
+        .exec()
+        .then((artist) => {
+          if (artist) {
+            const song = new Song({
+              _id: new mongoose.Types.ObjectId(),
+              songName: req.body.songName,
+              songUrl: req.body.songUrl,
+              imageUrl: req.body.imageUrl,
+              artistId: artistId,
+            });
+            song
+              .save()
+              .then((result) => {
+                res.status(200).json({
+                  message: "Song added Sucesfully",
+                });
+              })
+              .catch((err) => {
+                res.status(500).json({
+                  error: err,
+                });
+              });
+          } else {
+            res.status(404).json({
+              message: "Artist not found",
+            });
+          }
+        })
+        .catch((err) => {
+          res.status(500).json({
+            error: err,
+          });
+        });
+    }
+  });
+});
+router.get("/getArtistProfile", verifyToken, (req, res, next) => {
+  jwt.verify(req.token, "1234mmm", (err, authData) => {
+    if (err) {
+      return res.status(401).json({
+        error: err,
+      });
+    } else {
+      const artistId = authData.id;
+      Artist.findById(artistId)
+        .exec()
+        .then((artist) => {
+          res.status(200).json({
+            artist: artist,
+          });
+        })
+        .catch((err) => {
+          res.status(500).json({
+            error: err,
+          });
+        });
+    }
+  });
+});
 
 router.get("/getArtist", (req, res, next) => {
   const bearerHeader = req.headers["authorization"];

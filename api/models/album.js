@@ -1,18 +1,11 @@
 const mongoose = require("mongoose");
 
-// mongose.connect(
-//   "mongodb+srv://np03cs4s220363:S123456@cluster0.mrfhznh.mongodb.net/Shop?retryWrites=true&w=majority"
-// );
-
-const albumScheme = mongoose.Schema({
+const albumSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   albumName: String,
   imageUrl: String,
   artist: String,
-  songs: [songSchema], //
+  songs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Song" }], // List of song references
 });
-module.exports = mongoose.model("albumScheme", albumScheme);
 
-
-
-
+module.exports = mongoose.model("Album", albumSchema);

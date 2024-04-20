@@ -8,6 +8,4 @@ const artistSchema = mongoose.Schema({
   profileUrl: String,
   activeSince: String,
 });
-
-
 module.exports = mongoose.model("artist_schema", artistSchema);
