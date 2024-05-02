@@ -13,12 +13,13 @@ const artistRoute = require("./api/routes/artist");
 const songRoute = require("./api/routes/song");
 const albumRoute = require("./api/routes/album");
 const oAuthRoute = require("./api/routes/oauth");
+const recommendations = require("./api/routes/recommendation");
 
-mongose.connect(
-  "mongodb+srv://np03cs4s220363:qwerty12345@cluster0.mrfhznh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-);
+// mongose.connect(
+//   "mongodb+srv://np03cs4s220363:qwerty12345@cluster0.mrfhznh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+// );
 
-// mongose.connect("mongodb://localhost:27017/beatMandu");
+mongose.connect("mongodb://localhost:27017/beatMandu");
 
 // localhost: 27017;
 
@@ -44,6 +45,7 @@ app.use("/beats", express.static("./upload/freebeats"));
 app.use("/song", songRoute);
 app.use("/album", albumRoute);
 app.use("/oauth", oAuthRoute);
+app.use("/recommendation", recommendations);
 
 app.use(cors()); //
 module.exports = app;

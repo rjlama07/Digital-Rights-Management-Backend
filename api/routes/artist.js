@@ -150,6 +150,7 @@ function verifyToken(req, res, next) {
 
 router.post("/uploadArtistSong", verifyToken, (req, res, next) => {
   jwt.verify(req.token, "1234mmm", (err, authData) => {
+    console.log("uoloiad artstis song called");
     if (err) {
       return res.status(401).json({
         error: err,
@@ -186,6 +187,7 @@ router.post("/uploadArtistSong", verifyToken, (req, res, next) => {
           }
         })
         .catch((err) => {
+          console.log(err);
           res.status(500).json({
             error: err,
           });
